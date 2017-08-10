@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from standard_x import standard_x
 from pearson_correlation import pearson_correlation
 from explained_variance import explained_variance
+from k_means_clustering import k_means_clustering
+from pca import plt_pca
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -24,12 +26,12 @@ X_std, stocks_num = standard_x(stocks)
 
 explained_variance(stocks, X_std)
 
+#################################################################
 #
+
+x_9d = plt_pca(X_std)
+
+#################################################################
 #
-# # pca = PCA(n_components=9)
-# # x_9d = pca.fit_transform(X_std)
-# #
-# # plt.figure(figsize = (9,7))
-# # plt.scatter(x_9d[:,0],x_9d[:,1], c='goldenrod',alpha=0.5)
-# # plt.ylim(-10,30)
-# # plt.show()
+
+k_means_clustering(x_9d)
