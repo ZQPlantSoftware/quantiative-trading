@@ -6,6 +6,7 @@ from pearson_correlation import pearson_correlation
 from explained_variance import explained_variance
 from k_means_clustering import k_means_clustering
 from pca import plt_pca
+import seaborn as sb
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -34,4 +35,14 @@ x_9d = plt_pca(X_std)
 #################################################################
 #
 
-k_means_clustering(x_9d)
+X_clustered = k_means_clustering(x_9d)
+
+
+# Create a temp dataframe from our PCA projection data "x_9d"
+df = pd.DataFrame(x_9d)
+df = df[[0,1,2]]
+df['X_cluster'] = X_clustered
+
+# Call Seaborn's pairplot to visualize our KMeans clustering on the PCA projected data
+sb.pairplot(df, hue='X_cluster', palette='Dark2', diag_kind='kde', size=1.85)
+sb.plt.show()

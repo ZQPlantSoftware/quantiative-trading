@@ -16,3 +16,5 @@ def k_means_clustering(x_9d):
     plt.scatter(x_9d[:, 0], x_9d[:, 2], c=label_color, alpha=0.5)
     plt.show()
 
+    return X_clustered
+
