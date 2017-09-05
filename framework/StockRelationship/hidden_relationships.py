@@ -11,16 +11,16 @@ import seaborn as sb
 np.seterr(divide='ignore', invalid='ignore')
 
 # Quick way to test just a few column features
-# stocks = pd.read_csv('supercolumns-elements-nasdaq-nyse-otcbb-general-UPDATE-2017-03-01.csv', usecols=range(1,16))
+stocks = pd.read_csv('supercolumns-elements-nasdaq-nyse-otcbb-general-UPDATE-2017-03-01.csv', usecols=range(1,16))
 
-stocks = pd.read_csv('supercolumns-elements-nasdaq-nyse-otcbb-general-UPDATE-2017-03-01.csv')
+# stocks = pd.read_csv('./supercolumns-elements-nasdaq-nyse-otcbb-general-UPDATE-2017-03-01.csv')
 
 X_std, stocks_num = standard_x(stocks)
 
 #################################################################
 # Pearson Correlation of Concept Feature
 
-# pearson_correlation(stocks_num)
+pearson_correlation(stocks_num)
 
 #################################################################
 # Calculting Eigenvectors and eigenvalues of Cov matrix
