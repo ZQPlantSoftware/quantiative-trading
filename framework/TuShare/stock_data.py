@@ -17,4 +17,4 @@ values.loc[:, 'peg'] = values.pe / values.rev
 
 values.sort_index(by='peg', ascending=True).to_csv('/Users/georgezou/PycharmProjects/quantitative-trading/data/peg.csv')
 
-print('job done')
+print('job done!')
