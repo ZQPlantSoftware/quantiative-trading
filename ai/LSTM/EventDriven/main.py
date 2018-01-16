@@ -1,0 +1,5 @@
+import mergingData
+import queryNewsFromNYTimes
+import queryStockPrice
+
+print(queryNewsFromNYTimes.queryNewsFromNYTimes())
