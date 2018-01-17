@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-years = [2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007]
+years = [2016, 2015] # , 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007]
 months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 dataDirPath = '/home/quantiative-trading/ai/EventDriven/data/'
 
@@ -166,6 +166,8 @@ def mergingData(interpolated_df):
                            type_of_material_list):
                         if any(substring in NYTimes_data["response"]["docs"][:][i]['section_name'].lower() for substring in
                                section_name_list):
+                            global current_article_str
+
                             # count += 1
                             count_articles_filtered += 1
                             # print 'i: ' + str(i) dick_key = ['pub_date', 'headline']
