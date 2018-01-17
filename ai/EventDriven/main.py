@@ -2,7 +2,7 @@ from dataHelper import queryNewsFromNYTimes, queryStockPrice, mergingData
 
 # Process with News and Stock Price Data
 
-queryNewsFromNYTimes()
+# queryNewsFromNYTimes()
 interpolateDf = queryStockPrice()
 mergingData(interpolateDf)
 
