@@ -114,8 +114,6 @@ type_of_material_list = ['blog', 'brief', 'news', 'editorial', 'op-ed', 'list','
 section_name_list = ['business', 'national', 'world', 'u.s.' , 'politics', 'opinion', 'tech', 'science',  'health']
 news_desk_list = ['business', 'national', 'world', 'u.s.' , 'politics', 'opinion', 'tech', 'science',  'health', 'foreign']
 
-current_article_str = ''
-
 def try_parsing_date(text):
     for fmt in date_format:
         try:
@@ -142,6 +140,7 @@ Search for every month
 '''
 def mergingData(interpolated_df):
     current_date = '2016-10-01'
+    current_article_str = ''
 
     # Adding article column to dataframe
     interpolated_df["articles"] = ''
