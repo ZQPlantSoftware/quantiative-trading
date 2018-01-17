@@ -7,6 +7,10 @@ from datetime import datetime
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+years = [2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007]
+months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+dataDirPath = '/home/EventDrivenLSTM/data/'
+
 class APIKeyException(Exception):
     def __init__(self, message):
         self.message = message
@@ -46,14 +50,9 @@ class ArchiveAPI(object):
         r = requests.get(url)
         return r.json()
 
-
-api = ArchiveAPI('0ba6dc04a8cb44e0a890c00df88c393a')
-
-years = [2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007]
-months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-dataDirPath = '/home/EventDrivenLSTM/data/'
-
 def queryNewsFromNYTimes():
+    api = ArchiveAPI('0ba6dc04a8cb44e0a890c00df88c393a')
+
     for year in years:
         for month in months:
             print('year', year, 'month', month)
@@ -80,7 +79,7 @@ def interpolateDf(df):
 
 def queryStockPrice():
     with open(
-            '/Users/georgezou/Documents/Coding/ML/Neural-Network-with-Financial-Time-Series-Data/data/DJIA_indices_data.csv',
+            dataDirPath + 'DJIA_indices_data.csv',
             'r', encoding="utf-8") as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',')
         # Converting the csv file reader to a lists
@@ -108,10 +107,7 @@ def queryStockPrice():
 
 # ########### Merging Data ################
 date_format = ["%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S+%f"]
-
-years = [2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007]
-months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-dict_keys = ['pub_date', 'headline'] #, 'lead_paragraph']
+dict_keys = ['pub_date', 'headline']
 articles_dict = dict.fromkeys(dict_keys)
 
 # Filtering to read only the following news
@@ -133,15 +129,15 @@ def try_parsing_date(text):
 
 def saveToFile(interpolated_df):
     # Saving the data as pickle file
-    interpolated_df.to_pickle('/Users/georgezou/Desktop/stock_rnn_data/pickled_ten_year_filtered_lead_para.pkl')
+    interpolated_df.to_pickle(dataDirPath + 'pickled_ten_year_filtered_lead_para.pkl')
 
     # Save pandas frame in csv form
     interpolated_df.to_csv(
-        '/Users/georgezou/Desktop/stock_rnn_data/sample_interpolated_df_10_years_filtered_lead_para.csv',
+        dataDirPath + 'sample_interpolated_df_10_years_filtered_lead_para.csv',
         sep='\t', encoding='utf-8')
 
     # Reading the data as pickle file
-    dataframe_read = pd.read_pickle('/Users/georgezou/Desktop/stock_rnn_data/pickled_ten_year_filtered_lead_para.pkl')
+    dataframe_read = pd.read_pickle(dataDirPath + 'pickled_ten_year_filtered_lead_para.pkl')
     return dataframe_read
 
 '''
@@ -159,7 +155,7 @@ def mergingData(interpolated_df):
 
     for year in years:  # search for every month
         for month in months:
-            file_str = '/Users/georgezou/Desktop/stock_rnn_data/' + str(year) + '-' + '{:02}'.format(month) + '.json'
+            file_str = dataDirPath + str(year) + '-' + '{:02}'.format(month) + '.json'
 
             with open(file_str) as data_file:
                 NYTimes_data = json.load(data_file)
@@ -252,7 +248,7 @@ def mergingData(interpolated_df):
             # print date
             month = date.month
             year = date.year
-            file_str = '/Users/georgezou/Desktop/stock_rnn_data/' + str(year) + '-' + '{:02}'.format(month) + '.json'
+            file_str = dataDirPath + str(year) + '-' + '{:02}'.format(month) + '.json'
             with open(file_str) as data_file:
                 NYTimes_data = json.load(data_file)
             count_total_articles = count_total_articles + len(NYTimes_data["response"]["docs"][:])
@@ -283,6 +279,4 @@ def mergingData(interpolated_df):
                     pass
 
     saveToFile(interpolated_df)
-
-    return count_articles_filtered, count_total_articles, count_main_not_exist, count_unicode_error
 
