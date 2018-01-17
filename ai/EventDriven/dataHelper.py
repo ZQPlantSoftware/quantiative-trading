@@ -1,10 +1,8 @@
 import requests
-import sys, csv, json
+import csv, json
 import numpy as np
 import pandas as pd
 from datetime import datetime
-
-sys.setdefaultencoding('utf8')
 
 years = [2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007]
 months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
