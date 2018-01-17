@@ -1,5 +1,4 @@
-import mergingData
-import queryNewsFromNYTimes
-import queryStockPrice
+from dataHelper import queryNewsFromNYTimes, queryStockPrice, mergingData
 
-print(queryNewsFromNYTimes.queryNewsFromNYTimes())
+print(queryNewsFromNYTimes())
+
