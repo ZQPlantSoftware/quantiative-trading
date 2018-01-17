@@ -1,3 +1,4 @@
+import os
 import requests
 import csv, json
 import numpy as np
@@ -54,7 +55,7 @@ def queryNewsFromNYTimes():
         for month in months:
             print('year', year, 'month', month)
             mydict = api.query(year, month)
-            print('mydict', mydict)
+
             file_str = dataDirPath + str(year) + '-' + '{:02}'.format(month) + '.json'
             with open(file_str, 'w') as fout:
                 try:
@@ -68,7 +69,7 @@ def queryNewsFromNYTimes():
 def interpolateDf(df):
     df1 = df
     idx = pd.date_range('12-29-2006', '12-31-2016')
-    df1.index = pd.DatatimeIndex(df1.index)
+    df1.index = pd.DatetimeIndex(df1.index)
     df1 = df1.reindex(idx, fill_value=np.NaN)
     interpolated_df = df1.interpolate()
     interpolated_df.count()
@@ -113,7 +114,6 @@ type_of_material_list = ['blog', 'brief', 'news', 'editorial', 'op-ed', 'list','
 section_name_list = ['business', 'national', 'world', 'u.s.' , 'politics', 'opinion', 'tech', 'science',  'health']
 news_desk_list = ['business', 'national', 'world', 'u.s.' , 'politics', 'opinion', 'tech', 'science',  'health', 'foreign']
 
-current_date = '2016-10-01'
 current_article_str = ''
 
 def try_parsing_date(text):
@@ -141,6 +141,8 @@ def saveToFile(interpolated_df):
 Search for every month
 '''
 def mergingData(interpolated_df):
+    current_date = '2016-10-01'
+
     # Adding article column to dataframe
     interpolated_df["articles"] = ''
 
