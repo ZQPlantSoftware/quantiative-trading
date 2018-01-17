@@ -193,6 +193,8 @@ def mergingData(interpolated_df):
 
                                 # Exception for section_name or type_of_material absent
                 except AttributeError:
+                    global current_article_str
+
                     # print 'attribute error'
                     # print NYTimes_data["response"]["docs"][:][i]
                     count_attribute_error += 1
@@ -278,5 +280,7 @@ def mergingData(interpolated_df):
                     # count_main_not_exist += 1
                     pass
 
+    print('###### interpolated_df ######')
+    print(interpolated_df)
     saveToFile(interpolated_df)
 
