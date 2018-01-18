@@ -5,10 +5,10 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-years = [2016, 2015] # , 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007]
+years = [2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007]
 months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-# idx = pd.date_range('12-29-2006', '12-31-2016')
-idx = pd.date_range('12-29-2015', '12-31-2016')
+idx = pd.date_range('12-29-2006', '12-31-2016')
+# idx = pd.date_range('12-29-2015', '12-31-2016')
 
 dataDirPath = '/home/quantiative-trading/ai/EventDriven/data/'
 
@@ -137,12 +137,13 @@ def saveToFile(interpolated_df):
     dataframe_read = pd.read_pickle(dataDirPath + 'pickled_ten_year_filtered_lead_para.pkl')
     return dataframe_read
 
+current_article_str = ''
+
 '''
 Search for every month
 '''
 def mergingData(interpolated_df):
     current_date = '2016-10-01'
-    current_article_str = ''
 
     # Adding article column to dataframe
     interpolated_df["articles"] = ''
@@ -163,12 +164,13 @@ def mergingData(interpolated_df):
             count_total_articles = count_total_articles + len(NYTimes_data["response"]["docs"][:])  # add article number
             for i in range(len(
                     NYTimes_data["response"]["docs"][:])):  # search in every docs for type of material or section = in the list
+                global current_article_str
+
                 try:
                     if any(substring in NYTimes_data["response"]["docs"][:][i]['type_of_material'].lower() for substring in
                            type_of_material_list):
                         if any(substring in NYTimes_data["response"]["docs"][:][i]['section_name'].lower() for substring in
                                section_name_list):
-                            global current_article_str
 
                             # count += 1
                             count_articles_filtered += 1
