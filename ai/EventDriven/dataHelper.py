@@ -7,6 +7,9 @@ from datetime import datetime
 
 years = [2016, 2015] # , 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007]
 months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+# idx = pd.date_range('12-29-2006', '12-31-2016')
+idx = pd.date_range('12-29-2005', '12-31-2016')
+
 dataDirPath = '/home/quantiative-trading/ai/EventDriven/data/'
 
 class APIKeyException(Exception):
@@ -65,10 +68,9 @@ def queryNewsFromNYTimes():
             fout.close()
 
 # ################# Query Stock price #################
-
 def interpolateDf(df):
     df1 = df
-    idx = pd.date_range('12-29-2006', '12-31-2016')
+    global idx
     df1.index = pd.DatetimeIndex(df1.index)
     df1 = df1.reindex(idx, fill_value=np.NaN)
     interpolated_df = df1.interpolate()
@@ -238,11 +240,12 @@ def mergingData(interpolated_df):
                     count_main_not_exist += 1
                     pass
 
-    print (count_articles_filtered)
-    print (count_total_articles)
-    print (count_main_not_exist)
-    print (count_unicode_error)
+    print ('count_articles_filtered:', count_articles_filtered)
+    print ('count_total_articles:', count_total_articles)
+    print ('count_main_not_exist:', count_main_not_exist)
+    print ('count_unicode_error:', count_unicode_error)
 
+    print('*** Putting all articles if no section_name or news_desk not found ***:')
     # Putting all articles if no section_name or news_desk not found
     for date, row in interpolated_df.T.iteritems():
         if len(interpolated_df.loc[date, 'articles']) <= 400:
@@ -251,6 +254,7 @@ def mergingData(interpolated_df):
             month = date.month
             year = date.year
             file_str = dataDirPath + str(year) + '-' + '{:02}'.format(month) + '.json'
+            print('file_str:', file_str)
             with open(file_str) as data_file:
                 NYTimes_data = json.load(data_file)
             count_total_articles = count_total_articles + len(NYTimes_data["response"]["docs"][:])
