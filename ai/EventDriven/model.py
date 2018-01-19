@@ -5,7 +5,7 @@ import unicodedata
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 def processWithData():
-    df_stocks = pd.read_pickle('/Users/georgezou/Desktop/stock_rnn_data/pickled_ten_year_filtered_lead_para.pkl')
+    df_stocks = pd.read_pickle('/home/quantiative-trading/ai/EventDriven/data/pickled_ten_year_filtered_lead_para.pkl')
 
     df_stocks['prices'] = df_stocks['adj close'].apply(np.int64)
 
