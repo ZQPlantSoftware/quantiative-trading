@@ -290,3 +290,12 @@ def mergingData(interpolated_df):
     print(interpolated_df)
     saveToFile(interpolated_df)
 
+def printDataStructure():
+    df_stocks = pd.read_pickle(dataDirPath + 'pickled_ten_year_filtered_lead_para.pkl')
+    print (df_stocks.head())
+    df_stocks['prices'] = df_stocks['adj close'].apply(np.int64)
+    df_stocks.head()
+    df_stocks['articles'] = df_stocks['articles'].map(lambda x: x.lstrip('.-'))
+    df_stocks.head()
+    df = df_stocks[['prices']].copy()
+    df.head()
