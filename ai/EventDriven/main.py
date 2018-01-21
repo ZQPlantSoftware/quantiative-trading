@@ -1,5 +1,7 @@
 from dataHelper import queryNewsFromNYTimes, queryStockPrice, mergingData
 from model import run_model, sentimentIntensity, processWithData, normalize_data, generate_hyperparameters, split_train_and_test_set
+import nltk
+
 
 # ### Process Data###
 
@@ -7,10 +9,14 @@ from model import run_model, sentimentIntensity, processWithData, normalize_data
 # interpolateDf = queryStockPrice()
 # mergingData(interpolateDf)
 
+# ### IF FIRST TIME USE NLTK ###
+nltk.download()
+
 # ### Build Model ###
 
 print('### Build Model ###')
-df, df_stocks = sentimentIntensity(processWithData())
+df, df_stocks = processWithData()
+df, df_stocks = sentimentIntensity(df, df_stocks)
 print('### read data and sentiment intensity success:', df.head())
 
 datasetNorm = normalize_data(df)
