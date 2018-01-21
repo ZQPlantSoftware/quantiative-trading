@@ -7,7 +7,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 def processWithData():
     df_stocks = pd.read_pickle('/home/quantiative-trading/ai/EventDriven/data/pickled_ten_year_filtered_lead_para.pkl')
 
-    df_stocks['prices'] = df_stocks['adj close'].apply(np.int64)
+    df_stocks['prices'] = df_stocks['adj close'].replace(np.nan, 0).apply(np.float32)
 
     # Selecting the prices and articles
     df_stocks = df_stocks[['prices', 'articles']]
@@ -98,15 +98,15 @@ def generate_hyperparameters(total_length):
           % (num_batches, batch_size, truncated_backprop_length))
 
     return {
-        batch_size,
-        total_series_length,
-        truncated_backprop_length,
-        state_size,
-        num_epochs,
-        num_features,
-        num_classes,
-        num_batches,
-        min_test_size
+        'batch_size': batch_size,
+        'total_series_length': total_series_length,
+        'truncated_backprop_length': truncated_backprop_length,
+        'state_size': state_size,
+        'num_epochs': num_epochs,
+        'num_features': num_features,
+        'num_classes': num_classes,
+        'num_batches': num_batches,
+        'min_test_size': min_test_size
     }
 
 def generate_placeholder(hp):
