@@ -1,8 +1,12 @@
 import pandas as pd
 import numpy as np
 import tensorflow as tf
+import matplotlib
+import matplotlib.pyplot as plt
 import unicodedata
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+matplotlib.use('GTK')
 
 def processWithData():
     df_stocks = pd.read_pickle('/home/quantiative-trading/ai/EventDriven/data/pickled_ten_year_filtered_lead_para.pkl')
@@ -194,7 +198,7 @@ def run_model(parameter, hp):
 
         for test_idx in range(len(xTest) - hp['truncated_backprop_length']):
             testBatchX = xTest[test_idx:test_idx + hp['truncated_backprop_length'], :].reshape((1, hp['truncated_backprop_length'], hp['num_features']))
-            testBatchY = yTest[test_idx:test_idx + hp['truncated_backprop_length']].reshape((1, parameters['truncated_backprop_length'], 1))
+            testBatchY = yTest[test_idx:test_idx + hp['truncated_backprop_length']].reshape((1, hp['truncated_backprop_length'], 1))
 
             feed = {
                 parameters['batchX_placeholder']: testBatchX,
@@ -203,3 +207,13 @@ def run_model(parameter, hp):
 
             _last_state, _last_label, test_pred = sess.run([parameters['last_state'], parameters['last_label'], parameters['prediction']], feed_dict=feed)
             test_pred_list.append(test_pred[-1][0])
+
+        print('Final test cost:', test_pred_list[len(test_pred_list) - 1])
+        print('test_pred:', test_pred)
+
+        plt.figure(figsize=(21, 7))
+        plt.plot(yTest, label='Price', color='blue')
+        plt.plot(test_pred_list, label='Predicted', color='red')
+        plt.title('Price vs Predicted')
+        plt.legend(loc='upper left')
+        plt.show()
