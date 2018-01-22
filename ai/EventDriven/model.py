@@ -89,7 +89,7 @@ def generate_hyperparameters(total_length):
     num_epochs = 1000
     num_features = 4
     num_classes = 1
-    num_batches = total_series_length / batch_size / truncated_backprop_length
+    num_batches = int(total_series_length / batch_size / truncated_backprop_length)
 
     min_test_size = 100
 
@@ -130,7 +130,7 @@ def generate_model(hp):
     # Forward pass - unroll the cell
     cell = tf.contrib.rnn.BasicLSTMCell(num_units=hp['state_size'])
     states_series, current_state = tf.nn.dynamic_rnn(cell=cell, inputs=batchX_placeholder, dtype=tf.float32)
-    state_series = tf.transpose(states_series, [1, 0, 2])
+    states_series = tf.transpose(states_series, [1, 0, 2])
 
     # Backward pass - Output
     last_state = tf.gather(params=states_series, indices=states_series.get_shape()[0] - 1)
@@ -179,11 +179,11 @@ def run_model(parameter, hp):
                 batchX = xTrain[start_idx:end_idx, :].reshape(hp['batch_size'], hp['truncated_backprop_length'], hp['num_features'])
                 batchY = yTrain[start_idx:end_idx].reshape(hp['batch_size'], hp['truncated_backprop_length'], 1)
 
-                feed = {parameters.batchX_placeholder: batchX, parameters.batchY_placeholder: batchY}
+                feed = {parameters['batchX_placeholder']: batchX, parameters['batchY_placeholder']: batchY}
 
                 # Train
                 _loss, _train_step, _pred, _last_label, _prediction = sess.run(
-                    fetches=[parameters.loss, parameters.train_step, parameters.prediction, parameters.last_label, parameters.prediction],
+                    fetches=[parameters['loss'], parameters['train_step'], parameters['prediction'], parameters['last_label'], parameters['prediction']],
                     feed_dict=feed
                 )
 
@@ -194,12 +194,12 @@ def run_model(parameter, hp):
 
         for test_idx in range(len(xTest) - hp['truncated_backprop_length']):
             testBatchX = xTest[test_idx:test_idx + hp['truncated_backprop_length'], :].reshape((1, hp['truncated_backprop_length'], hp['num_features']))
-            testBatchY = yTest[test_idx:test_idx + hp['truncated_backprop_length']].reshape((1, parameters.truncated_backprop_length, 1))
+            testBatchY = yTest[test_idx:test_idx + hp['truncated_backprop_length']].reshape((1, parameters['truncated_backprop_length'], 1))
 
             feed = {
-                parameters.batchX_placeholder: testBatchX,
-                parameters.batchY_placeholder: testBatchY
+                parameters['batchX_placeholder']: testBatchX,
+                parameters['batchY_placeholder']: testBatchY
             }
 
-            _last_state, _last_label, test_pred = sess.run([parameters.last_state, parameters.last_label, parameters.prediction], feed_dict=feed)
+            _last_state, _last_label, test_pred = sess.run([parameters['last_state'], parameters['last_label'], parameters['prediction']], feed_dict=feed)
             test_pred_list.append(test_pred[-1][0])
