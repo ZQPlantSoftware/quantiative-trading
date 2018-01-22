@@ -145,14 +145,14 @@ def generate_model(hp):
     train_step = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
 
     return {
-        loss,
-        train_step,
-        prediction,
-        last_label,
-        last_state,
-        prediction,
-        batchX_placeholder,
-        batchY_placeholder
+        'loss': loss,
+        'train_step': train_step,
+        'prediction': prediction,
+        'last_label': last_label,
+        'last_state': last_state,
+        'prediction': prediction,
+        'batchX_placeholder': batchX_placeholder,
+        'batchY_placeholder': batchY_placeholder
     }
 
 def run_model(parameter, hp):
