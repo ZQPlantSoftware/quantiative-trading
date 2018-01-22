@@ -29,4 +29,4 @@ xTrain, yTrain, xTest, yTest = split_train_and_test_set(datasetNorm, hp)
 # ### Run model ###
 
 run_model(
-    {xTrain: xTrain, yTrain: yTrain, xTest: xTest, yTest: yTest}, hp)
+    {'xTrain': xTrain, 'yTrain': yTrain, 'xTest': xTest, 'yTest': yTest}, hp)
