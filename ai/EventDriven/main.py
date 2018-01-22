@@ -1,4 +1,4 @@
-from dataHelper import queryNewsFromNYTimes, queryStockPrice, mergingData
+# from dataHelper import queryNewsFromNYTimes, queryStockPrice, mergingData
 from model import run_model, sentimentIntensity, processWithData, normalize_data, generate_hyperparameters, split_train_and_test_set
 import nltk
 
@@ -10,7 +10,7 @@ import nltk
 # mergingData(interpolateDf)
 
 # ### IF FIRST TIME USE NLTK ###
-nltk.download()
+# nltk.download()
 
 # ### Build Model ###
 
@@ -24,9 +24,9 @@ print('### normalize data success:', datasetNorm.head())
 
 hp = generate_hyperparameters(len(datasetNorm.index))
 xTrain, yTrain, xTest, yTest = split_train_and_test_set(datasetNorm, hp)
-print('### split train and test data success:', xTrain.head(), yTrain.head(), xTest.head(), yTest.head())
+# print('### split train and test data success:', xTrain.head(), yTrain.head(), xTest.head(), yTest.head())
 
 # ### Run model ###
 
 run_model(
-    {xTrain, yTrain, xTest, yTest}, hp)
+    {xTrain: xTrain, yTrain: yTrain, xTest: xTest, yTest: yTest}, hp)
