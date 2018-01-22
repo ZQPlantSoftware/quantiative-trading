@@ -159,7 +159,11 @@ def run_model(parameter, hp):
     loss_list = []
     test_pred_list = []
 
-    xTrain, yTrain, xTest, yTest = parameter
+    xTrain = parameter["xTrain"]
+    yTrain = parameter["yTrain"]
+    xTest = parameter["xTest"]
+    yTest = parameter["yTest"]
+
     parameters = generate_model(hp)
 
     with tf.Session() as sess:
