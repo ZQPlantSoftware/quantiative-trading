@@ -24,7 +24,7 @@ print('### normalize data success:', datasetNorm.head())
 
 hp = generate_hyperparameters(len(datasetNorm.index))
 xTrain, yTrain, xTest, yTest = split_train_and_test_set(datasetNorm, hp)
-# print('### split train and test data success:', xTrain.head(), yTrain.head(), xTest.head(), yTest.head())
+print('### split train and test data success:')
 
 # ### Run model ###
 

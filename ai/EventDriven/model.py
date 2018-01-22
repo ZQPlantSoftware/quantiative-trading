@@ -122,7 +122,7 @@ def generate_placeholder(hp):
 def generate_model(hp):
     tf.reset_default_graph()
 
-    batchX_placeholder, batchY_placeholder, W2, b2 = generate_placeholder()
+    batchX_placeholder, batchY_placeholder, W2, b2 = generate_placeholder(hp)
 
     # Unpack
     labels_series = tf.unstack(batchY_placeholder, axis=1)
