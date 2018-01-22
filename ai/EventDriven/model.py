@@ -62,10 +62,10 @@ def normalize_data(df):
     return datasetNorm
 
 def split_train_and_test_set(datasetNorm, hp):
-    datasetTrain = datasetNorm[datasetNorm.index < hp.num_batches * hp.batch_size * hp.truncated_backprop_length]
+    datasetTrain = datasetNorm[datasetNorm.index < hp['num_batches'] * hp['batch_size'] * hp['truncated_backprop_length']]
 
-    for i in range(hp.min_test_size, len(datasetNorm.index)):
-        if(i % hp.truncated_backprop_length * hp.batch_size == 0):
+    for i in range(hp['min_test_size'], len(datasetNorm.index)):
+        if(i % hp['truncated_backprop_length'] * hp['batch_size'] == 0):
             test_first_idx = len(datasetNorm.index) - i
             break
 
@@ -110,12 +110,12 @@ def generate_hyperparameters(total_length):
     }
 
 def generate_placeholder(hp):
-    batchX_placeholder = tf.placeholder(dtype=tf.float32, shape=[None, hp.truncated_backprop_length, hp.num_features], name='data_ph')
-    batchY_placeholder = tf.placeholder(dtype=tf.float32, shape=[None, hp.truncated_backprop_length, hp.num_classes], name='target_ph')
+    batchX_placeholder = tf.placeholder(dtype=tf.float32, shape=[None, hp['truncated_backprop_length'], hp['num_features']], name='data_ph')
+    batchY_placeholder = tf.placeholder(dtype=tf.float32, shape=[None, hp['truncated_backprop_length'], hp['num_classes']], name='target_ph')
 
     # Weights and biases Because its 3 layer net INPUT: Hidden Recurrent Layer OUTPUT: We need 3 pair of W and b
-    W2 = tf.Variable(initial_value=np.random.rand(hp.state_size, hp.num_classes), dtype=tf.float32)
-    b2 = tf.Variable(initial_value=np.random.rand(1, hp.num_classes), dtype = tf.float32)
+    W2 = tf.Variable(initial_value=np.random.rand(hp['state_size'], hp['num_classes']), dtype=tf.float32)
+    b2 = tf.Variable(initial_value=np.random.rand(1, hp['num_classes']), dtype = tf.float32)
 
     return batchX_placeholder,  batchY_placeholder, W2, b2
 
@@ -128,7 +128,7 @@ def generate_model(hp):
     labels_series = tf.unstack(batchY_placeholder, axis=1)
 
     # Forward pass - unroll the cell
-    cell = tf.contrib.rnn.BasicLSTMCell(num_units=hp.state_size)
+    cell = tf.contrib.rnn.BasicLSTMCell(num_units=hp['state_size'])
     states_series, current_state = tf.nn.dynamic_rnn(cell=cell, inputs=batchX_placeholder, dtype=tf.float32)
     state_series = tf.transpose(states_series, [1, 0, 2])
 
@@ -136,8 +136,8 @@ def generate_model(hp):
     last_state = tf.gather(params=states_series, indices=states_series.get_shape()[0] - 1)
     last_label = tf.gather(params=labels_series, indices=len(labels_series) - 1)
 
-    weight = tf.Variable(tf.truncated_normal([hp.state_size, hp.num_classes]))
-    bias = tf.Variable(tf.constant(0.1, shape=[hp.num_classes]))
+    weight = tf.Variable(tf.truncated_normal([hp['state_size'], hp['num_classes']]))
+    bias = tf.Variable(tf.constant(0.1, shape=[hp['num_classes']]))
 
     prediction = tf.matmul(last_state, weight) + bias
 
@@ -165,15 +165,15 @@ def run_model(parameter, hp):
     with tf.Session() as sess:
         tf.global_variables_initializer().run()
 
-        for epoch_idx in range(hp.num_epochs):
+        for epoch_idx in range(hp['num_epochs']):
             print('Epoch %d' % epoch_idx)
 
-            for batch_idx in range(hp.num_batches):
-                start_idx = batch_idx * hp.truncated_backprop_length
-                end_idx = start_idx + hp.truncated_backprop_length
+            for batch_idx in range(hp['num_batches']):
+                start_idx = batch_idx * hp['truncated_backprop_length']
+                end_idx = start_idx + hp['truncated_backprop_length']
 
-                batchX = xTrain[start_idx:end_idx, :].reshape(hp.batch_size, hp.truncated_backprop_length, hp.num_features)
-                batchY = yTrain[start_idx:end_idx].reshape(hp.batch_size, hp.truncated_backprop_length, 1)
+                batchX = xTrain[start_idx:end_idx, :].reshape(hp['batch_size'], hp['truncated_backprop_length'], hp['num_features'])
+                batchY = yTrain[start_idx:end_idx].reshape(hp['batch_size'], hp['truncated_backprop_length'], 1)
 
                 feed = {parameters.batchX_placeholder: batchX, parameters.batchY_placeholder: batchY}
 
@@ -188,9 +188,9 @@ def run_model(parameter, hp):
                 if(batch_idx % 50 == 0):
                     print('Step %d - Loss: %.6f' % (batch_idx, _loss))
 
-        for test_idx in range(len(xTest) - hp.truncated_backprop_length):
-            testBatchX = xTest[test_idx:test_idx + hp.truncated_backprop_length, :].reshape((1, hp.truncated_backprop_length, hp.num_features))
-            testBatchY = yTest[test_idx:test_idx + hp.truncated_backprop_length].reshape((1, parameters.truncated_backprop_length, 1))
+        for test_idx in range(len(xTest) - hp['truncated_backprop_length']):
+            testBatchX = xTest[test_idx:test_idx + hp['truncated_backprop_length'], :].reshape((1, hp['truncated_backprop_length'], hp['num_features']))
+            testBatchY = yTest[test_idx:test_idx + hp['truncated_backprop_length']].reshape((1, parameters.truncated_backprop_length, 1))
 
             feed = {
                 parameters.batchX_placeholder: testBatchX,
