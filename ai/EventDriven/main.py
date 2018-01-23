@@ -1,13 +1,13 @@
-# from dataHelper import queryNewsFromNYTimes, queryStockPrice, mergingData
+# from preprocess import query_news_from_nyt, query_stock_price, merging_data
 from model import run_model, sentimentIntensity, processWithData, normalize_data, generate_hyperparameters, split_train_and_test_set
 import nltk
 
 
 # ### Process Data###
 
-# queryNewsFromNYTimes()
-# interpolateDf = queryStockPrice()
-# mergingData(interpolateDf)
+# query_news_from_nyt()
+# interpolate_df = query_stock_price()
+# merging_data(interpolate_df)
 
 # ### IF FIRST TIME USE NLTK ###
 # nltk.download()

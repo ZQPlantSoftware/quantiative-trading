@@ -12,17 +12,21 @@ idx = pd.date_range('01-01-2015', '12-31-2016')
 
 dataDirPath = '/home/quantiative-trading/ai/EventDriven/data/'
 
+
 class APIKeyException(Exception):
     def __init__(self, message):
         self.message = message
+
 
 class InvalidQueryException(Exception):
     def __init__(self, message):
         self.message = message
 
+
 class NoAPIKeyException(Exception):
     def __init__(self, message):
         self.message = message
+
 
 class ArchiveAPI(object):
     def __init__(self, key=None):
@@ -51,7 +55,8 @@ class ArchiveAPI(object):
         r = requests.get(url)
         return r.json()
 
-def queryNewsFromNYTimes():
+
+def query_news_from_nyt():
     api = ArchiveAPI('0ba6dc04a8cb44e0a890c00df88c393a')
 
     for year in years:
@@ -68,7 +73,9 @@ def queryNewsFromNYTimes():
             fout.close()
 
 # ################# Query Stock price #################
-def interpolateDf(df):
+
+
+def interpolate_df(df):
     df1 = df
     global idx
     df1.index = pd.DatetimeIndex(df1.index)
@@ -77,7 +84,8 @@ def interpolateDf(df):
     interpolated_df.count()
     return interpolated_df
 
-def queryStockPrice():
+
+def query_stock_price():
     with open(
             dataDirPath + 'DJIA_indices_data.csv',
             'r', encoding="utf-8") as csvfile:
@@ -85,7 +93,7 @@ def queryStockPrice():
         # Converting the csv file reader to a lists
         data_list = list(spamreader)
 
-    # Seoarating header from the data
+    # Separating header from the data
     header = data_list[0]
     data_list = data_list[1:]
     data_list = np.asarray(data_list)
@@ -103,7 +111,7 @@ def queryStockPrice():
                       columns=['close', 'adj close'],
                       dtype='float64')
 
-    return interpolateDf(df)
+    return interpolate_df(df)
 
 # ########### Merging Data ################
 date_format = ["%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S+%f"]
@@ -112,9 +120,10 @@ articles_dict = dict.fromkeys(dict_keys)
 
 # Filtering to read only the following news
 
-type_of_material_list = ['blog', 'brief', 'news', 'editorial', 'op-ed', 'list','analysis']
-section_name_list = ['business', 'national', 'world', 'u.s.' , 'politics', 'opinion', 'tech', 'science',  'health']
-news_desk_list = ['business', 'national', 'world', 'u.s.' , 'politics', 'opinion', 'tech', 'science',  'health', 'foreign']
+type_of_material_list = ['blog', 'brief', 'news', 'editorial', 'op-ed', 'list', 'analysis']
+section_name_list = ['business', 'national', 'world', 'u.s.', 'politics', 'opinion', 'tech', 'science',  'health']
+news_desk_list = ['business', 'national', 'world', 'u.s.', 'politics', 'opinion', 'tech', 'science',  'health', 'foreign']
+
 
 def try_parsing_date(text):
     for fmt in date_format:
@@ -124,7 +133,8 @@ def try_parsing_date(text):
             pass
     raise ValueError('no valid date format found')
 
-def saveToFile(interpolated_df):
+
+def save_to_file(interpolated_df):
     # Saving the data as pickle file
     interpolated_df.to_pickle(dataDirPath + 'pickled_ten_year_filtered_lead_para.pkl')
 
@@ -142,7 +152,9 @@ current_article_str = ''
 '''
 Search for every month
 '''
-def mergingData(interpolated_df):
+
+
+def merging_data(interpolated_df):
     current_date = '2016-10-01'
 
     # Adding article column to dataframe
@@ -161,9 +173,12 @@ def mergingData(interpolated_df):
             with open(file_str) as data_file:
                 NYTimes_data = json.load(data_file)
 
-            count_total_articles = count_total_articles + len(NYTimes_data["response"]["docs"][:])  # add article number
+            # add article number
+            count_total_articles = count_total_articles + len(NYTimes_data["response"]["docs"][:])
+
+            # search in every docs for type of material or section = in the list
             for i in range(len(
-                    NYTimes_data["response"]["docs"][:])):  # search in every docs for type of material or section = in the list
+                    NYTimes_data["response"]["docs"][:])):
                 global current_article_str
 
                 try:
@@ -288,7 +303,7 @@ def mergingData(interpolated_df):
 
     print('###### interpolated_df ######')
     print(interpolated_df)
-    saveToFile(interpolated_df)
+    save_to_file(interpolated_df)
 
 def printDataStructure():
     df_stocks = pd.read_pickle(dataDirPath + 'pickled_ten_year_filtered_lead_para.pkl')
