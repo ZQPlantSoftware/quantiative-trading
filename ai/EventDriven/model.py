@@ -81,6 +81,15 @@ def split_train_and_test_set(datasetNorm, hp):
     xTest = datasetTest[['prices', 'neu', 'neg', 'pos']].as_matrix()
     yTest = datasetTest['next_prices'].as_matrix()
 
+    plt.figure(figsize=(25, 5))
+    plt.plot(xTrain[:, 0])
+    plt.title('Train (' + str(len(xTrain)) + ' data points)')
+    plt.show()
+    plt.figure(figsize=(10, 3))
+    plt.plot(xTest[:, 0])
+    plt.title('Test (' + str(len(xTest)) + ' data points)')
+    plt.show()
+
     return xTrain, yTrain, xTest, yTest
 
 def generate_hyperparameters(total_length):
