@@ -7,18 +7,28 @@ from train_model import train_model
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
+import pandas as pd
+import os
 
 # configuration
 
 split_date = '2017-06-01'
 window_len = 10
 currency_type = ['bt_', 'eth_']
-persistence_path = 'model.h5'
+persistence_path = 'model.json'
+base_path = 'work/data/'
+market_info_path = 'market_info.h5'
 
 
-def do_predict(need_train=True, need_save=True):
+def do_predict(need_train=True, need_save=True, need_query=True):
     # data preprocessor
-    market_info = query_and_clean()
+    data_path = base_path + market_info_path
+    if os.path.exists(data_path):
+        market_info = pd.read_pickle(data_path)
+    else:
+        market_info = query_and_clean()
+        market_info.to_pickle(data_path)
+
     training_set, test_set, lstm_training_inputs, lstm_training_outputs, lstm_test_inputs, lstm_test_outputs \
         = data_preprocessor(market_info, split_date, window_len, currency_type=currency_type)
 
@@ -31,8 +41,8 @@ def do_predict(need_train=True, need_save=True):
 
     # ETH tomorrow price predict
     turn_datetime = training_set['Date'][window_len:].astype(datetime.datetime)
-    eth_close = training_set['eth_Close'][window_len:]
-    eth_close_end = training_set['eth_Close'][:-window_len]
+    eth_close = training_set['eth_Close'].values[window_len:]
+    eth_close_end = training_set['eth_Close'].values[:-window_len]
 
     x_ticks = [datetime.date(i, j, 1) for i in range(2013, 2019) for j in [1, 5, 9]]
     x_ticks_labels = [datetime.date(i, j, 1).strftime('%b %Y') for i in range(2013, 2019) for j in [1, 5, 9]]
@@ -41,7 +51,7 @@ def do_predict(need_train=True, need_save=True):
         model.predict(lstm_training_inputs)
     ) + 1
 
-    print('- Predict success with result:', predict)
+    print('- Predict success')
 
     predict_time_eth_close = (predict * eth_close_end)[0]
 
@@ -52,7 +62,7 @@ def do_predict(need_train=True, need_save=True):
     )
 
     def plot_predict_with_actual():
-        fig, ax1 = plt.subplot(1, 1)
+        fig, ax1 = plt.subplots(1, 1)
 
         ax1.set_xticks(x_ticks)
         ax1.set_xticklabels(x_ticks_labels)
@@ -78,7 +88,7 @@ def do_predict(need_train=True, need_save=True):
 
         # matplotlib zoom from http://akuederle.com/matplotlib-zoomed-up-inset
 
-        axins = zoomed_inset_axes(ax1, 3,35, loc=10)
+        axins = zoomed_inset_axes(ax1, 3.35, loc=10)
         axins.set_xticks(x_ticks)
         axins.plot(turn_datetime,
                    eth_close,
