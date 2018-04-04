@@ -20,7 +20,73 @@ base_path = 'work/data/'
 market_info_path = 'market_info.h5'
 
 
-def do_predict(need_train=True, need_save=True, need_query=True):
+def predict_and_plot(X, y, data_set, x_ticks, x_ticks_labels, model, title, need_zoom):
+    turn_datetime = data_set['Date'][window_len:].astype(datetime.datetime)
+    close = y.values[window_len:]
+    close_end = y.values[:-window_len]
+    # close = data_set['eth_Close'].values[window_len:]
+    # close_end = data_set['eth_Close'].values[:-window_len]
+
+    predict = np.transpose(
+        model.predict(X)
+    ) + 1
+
+    print('- Predict success')
+
+    predict_time_close = (predict * close_end)[0]
+
+    mae = np.mean(
+        np.abs(predict - \
+               close /
+               close_end)
+    )
+
+    def plot_predict_with_actual():
+        fig, ax1 = plt.subplots(1, 1)
+
+        ax1.set_xticks(x_ticks)
+        ax1.set_xticklabels(x_ticks_labels)
+        ax1.plot(
+            turn_datetime,
+            close,
+            label='Actual')
+
+        ax1.plot(
+            turn_datetime,
+            predict_time_close,
+            label='Predicted'
+        )
+
+        ax1.set_title(title)
+        ax1.set_ylabel('Ethereum Price ($)', fontsize=12)
+        ax1.legend(bbox_to_anchor=(0.15, 1), loc=2, borderaxespad=0., prop={'size': 14})
+        ax1.annotate('MAE: %.4f' % mae,
+                     xy=(0.75, 0.9),
+                     xycoords='axes fraction',
+                     xytext=(0.75, 0.9),
+                     textcoords='axes fraction')
+
+        if need_zoom:
+            axins = zoomed_inset_axes(ax1, 3.35, loc=10)
+            axins.set_xticks(x_ticks)
+            axins.plot(turn_datetime,
+                       close,
+                       label='Actual')
+
+            axins.plot(turn_datetime,
+                       predict_time_close,
+                       label='Predicted')
+
+            axins.set_xlim([datetime.date(2017, 3, 1), datetime.date(2017, 5, 1)])
+            axins.set_ylim([10, 60])
+            axins.set_xticklabels('')
+            mark_inset(ax1, axins, loc1=1, loc2=3, fc="none", ec="0.5")
+        plt.show()
+
+    plot_predict_with_actual()
+
+
+def do_predict(need_train=True, need_save=True):
     # data preprocessor
     data_path = base_path + market_info_path
     if os.path.exists(data_path):
@@ -39,69 +105,18 @@ def do_predict(need_train=True, need_save=True, need_query=True):
     else:
         model = load_model(persistence_path)
 
-    # ETH tomorrow price predict
-    turn_datetime = training_set['Date'][window_len:].astype(datetime.datetime)
-    eth_close = training_set['eth_Close'].values[window_len:]
-    eth_close_end = training_set['eth_Close'].values[:-window_len]
+    training_x_ticks = [datetime.date(i, j, 1) for i in range(2013, 2019) for j in [1, 5, 9]]
+    training_x_ticks_labels = [datetime.date(i, j, 1).strftime('%b %Y') for i in range(2013, 2019) for j in [1, 5, 9]]
 
-    x_ticks = [datetime.date(i, j, 1) for i in range(2013, 2019) for j in [1, 5, 9]]
-    x_ticks_labels = [datetime.date(i, j, 1).strftime('%b %Y') for i in range(2013, 2019) for j in [1, 5, 9]]
+    test_x_ticks = [datetime.date(2017, i+1, 1) for i in range(12)]
+    test_x_ticks_labels = [datetime.date(2017, i+1, 1).strftime('%b %d %Y') for i in range(12)]
 
-    predict = np.transpose(
-        model.predict(lstm_training_inputs)
-    ) + 1
+    # Eth predict plot
+    predict_and_plot(lstm_training_inputs, training_set['eth_Close'], training_set, training_x_ticks, training_x_ticks_labels, model, "[ETH] Training Set: Single Timepoint Prediction", need_zoom=True)
+    predict_and_plot(lstm_test_inputs, test_set['eth_Close'], test_set, test_x_ticks, test_x_ticks_labels, model, "[ETH] Test Set: Single Timepoint Prediction", need_zoom=False)
 
-    print('- Predict success')
+    # Here we should train bit coin data and do the predict
 
-    predict_time_eth_close = (predict * eth_close_end)[0]
-
-    mae = np.mean(
-        np.abs(predict - \
-               eth_close /
-               eth_close_end)
-    )
-
-    def plot_predict_with_actual():
-        fig, ax1 = plt.subplots(1, 1)
-
-        ax1.set_xticks(x_ticks)
-        ax1.set_xticklabels(x_ticks_labels)
-        ax1.plot(
-            turn_datetime,
-            eth_close,
-            label='Actual')
-
-        ax1.plot(
-            turn_datetime,
-            predict_time_eth_close,
-            label='Predicted'
-        )
-
-        ax1.set_title('Training Set: Single Timepoint Prediction')
-        ax1.set_ylabel('Ethereum Price ($)', fontsize=12)
-        ax1.legend(bbox_to_anchor=(0.15, 1), loc=2, borderaxespad=0., prop={'size': 14})
-        ax1.annotate('MAE: %.4f' % mae,
-                     xy=(0.75, 0.9),
-                     xycoords='axes fraction',
-                     xytext=(0.75, 0.9),
-                     textcoords='axes fraction')
-
-        # matplotlib zoom from http://akuederle.com/matplotlib-zoomed-up-inset
-
-        axins = zoomed_inset_axes(ax1, 3.35, loc=10)
-        axins.set_xticks(x_ticks)
-        axins.plot(turn_datetime,
-                   eth_close,
-                   label='Actual')
-
-        axins.plot(turn_datetime,
-                   predict_time_eth_close,
-                   label='Predicted')
-
-        axins.set_xlim([datetime.date(2017, 3, 1), datetime.date(2017, 5, 1)])
-        axins.set_ylim([10, 60])
-        axins.set_xticklabels('')
-        mark_inset(ax1, axins, loc1=1, loc2=3, fc="none", ec="0.5")
-        plt.show()
-
-    plot_predict_with_actual()
+    # Btc predict plot
+    # predict_and_plot(lstm_training_inputs, training_set['bt_Close'], training_set, training_x_ticks, training_x_ticks_labels, model, "[BTC] Training Set: Single Timepoint Prediction", need_zoom=True)
+    # predict_and_plot(lstm_test_inputs, test_set['bt_Close'], test_set, test_x_ticks, test_x_ticks_labels, model, "[BTC] Test Set: Single Timepoint Prediction", need_zoom=False)
